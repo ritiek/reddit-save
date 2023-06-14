@@ -36,6 +36,13 @@ Create a folder that will contain your archive. Then run:
 ```bash
 $ ./save.py saved folder_name
 $ ./save.py upvoted folder_name
+$ ./save.py my_posts folder_name
+
+# This may have fetch posts that are privatized.
+$ ./save.py posts_containing_my_comments folder_name
+$ cat private_posts_containing_my_comments.txt
+# Retry privatized posts in case they're made public now.
+$ ./save.py private_posts_containing_my_comments folder_name
 ```
 
 The first command will backup your saved posts/comments to a file called folder_name/saved.html. The second will backup your upvoted posts to a file called folder_name/upvoted.html.

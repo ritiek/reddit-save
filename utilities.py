@@ -59,6 +59,37 @@ def get_saved_comments(client):
     ]
 
 
+def get_my_posts(client):
+    """Gets a list of submissions that the user has made."""
+
+    return [
+        post for post in client.user.me().submissions.new()
+        if post.__class__.__name__ == "Submission"
+    ]
+
+
+def get_posts_from_my_comments(client):
+    """Gets a list of comments that the user has made."""
+
+    submissions = set()
+    for comment in client.user.me().comments.new():
+        if comment.submission.__class__.__name__ == "Submission":
+            submissions.add(comment.submission)
+    return submissions
+
+
+def get_private_posts_from_my_comments(client):
+    """Gets a list of comments that the user has made."""
+
+    with open("private_posts_containing_my_comments.txt", "r") as f:
+        submission_ids = f.read()
+    
+    submissions = []
+    for submission_id in submission_ids.split("\n"):
+        if submission_id:
+            submissions.append(praw.models.Submission(client, submission_id))
+
+
 def get_post_html(post):
     """Takes a post object and creates a HTML for it - but not including the
     preview HTML."""

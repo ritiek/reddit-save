@@ -7,8 +7,10 @@ from tqdm import tqdm
 from utilities import *
 
 # Get arguments
+cmd_choices = ["saved", "upvoted", "my_posts", "posts_containing_my_comments", "private_posts_containing_my_comments"]
+
 parser = argparse.ArgumentParser(description="Save reddit posts to file.")
-parser.add_argument("mode", type=str, nargs=1, choices=["saved", "upvoted"], help="The file to convert.")
+parser.add_argument("mode", type=str, nargs=1, choices=cmd_choices, help="The file to convert.")
 
 if os.getenv("DOCKER", "0") != "1":
     parser.add_argument("location", type=str, nargs=1, help="The path to save to.")
@@ -28,9 +30,21 @@ if mode == "saved":
     html_file = "saved.html"
     get_posts = get_saved_posts
     get_comments = get_saved_comments
-else:
+elif mode == "upvoted":
     html_file = "upvoted.html"
     get_posts = get_upvoted_posts
+    get_comments = lambda client: []
+elif mode == "my_posts":
+    html_file = "my_posts.html"
+    get_posts = get_my_posts
+    get_comments = lambda client: []
+elif mode == "posts_containing_my_comments":
+    html_file = "posts_containing_my_comments.html"
+    get_posts = get_posts_from_my_comments
+    get_comments = lambda client: []
+elif mode == "private_posts_containing_my_comments":
+    html_file = "posts_containing_my_comments.html"
+    get_posts = get_private_posts_from_my_comments
     get_comments = lambda client: []
 
 # Make directory for media and posts
@@ -58,6 +72,21 @@ if not posts:
 else:
     for post in tqdm(posts):
         post_html = get_post_html(post)
+        if not post.url:
+            if mode == "posts_containing_my_comments":
+                print(f'Private(?): "{post.title}"')
+                with open("private_posts_containing_my_comments.txt", "a+") as f:
+                    f.seek(0)
+                    if post.id not in f.read():
+                        f.write(f"{post.id}\n")
+            continue
+        if mode == "private_posts_containing_my_comments":
+            print(f'Recovered: "{post.title}"')
+            with open("private_posts_containing_my_comments.txt", "r+") as f:
+                content = f.read()
+                content.replace(f"{post.id}\n", "")
+                f.seek(0)
+                f.write(content)
         media = save_media(post, location)
         if media:
             post_html = add_media_preview_to_html(post_html, media)
