@@ -88,7 +88,7 @@ def get_private_posts_from_my_comments(client):
     for submission_id in submission_ids.split("\n"):
         if submission_id:
             submissions.append(praw.models.Submission(client, submission_id))
-
+    return submissions
 
 def get_post_html(post):
     """Takes a post object and creates a HTML for it - but not including the

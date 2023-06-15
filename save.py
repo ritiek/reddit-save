@@ -91,7 +91,14 @@ else:
         if media:
             post_html = add_media_preview_to_html(post_html, media)
         posts_html.append(post_html)
-        page_html = create_post_page_html(post, post_html)
+        while True:
+            try:
+                page_html = create_post_page_html(post, post_html)
+            except Exception as e:
+                print(e)
+                print("Retrying...")
+            else:
+                break
         with open(os.path.join(location, "posts", f"{post.id}.html"), "w", encoding="utf-8") as f:
             f.write(page_html)
 posts_html += existing_posts_html
