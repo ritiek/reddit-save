@@ -11,7 +11,7 @@ reddit-save will backup saved posts, saved comments, and upvoted posts. It can't
 ## Installation
 
 ```bash
-$ git clone https://github.com/samirelanduk/reddit-save .
+$ git clone https://github.com/ritiek/reddit-save .
 $ cd reddit-save
 $ pip install -r requirements.txt
 ```
